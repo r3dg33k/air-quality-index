@@ -14,6 +14,10 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 2000px; }
+        }
         @keyframes blob {
             0%, 100% { transform: translate(0, 0) scale(1); }
             25% { transform: translate(20px, -50px) scale(1.1); }
@@ -25,6 +29,7 @@
             50% { background-position: 100% 50%; }
         }
         .animate-fadeIn { animation: fadeIn 0.6s ease-out; }
+        .animate-slideDown { animation: slideDown 0.7s ease-out; }
         .animate-blob { animation: blob 20s infinite; }
         .animation-delay-2000 { animation-delay: 2s; }
         .animation-delay-4000 { animation-delay: 4s; }
@@ -40,93 +45,71 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Lucide React icons as inline SVGs
-        const ChevronDown = () => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        // Icon Components
+        const ChevronDown = ({className}) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
         );
 
-        const ChevronUp = () => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        const ChevronUp = ({className}) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="18 15 12 9 6 15"></polyline>
             </svg>
         );
 
-        const Info = () => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        const Info = ({className}) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="16" x2="12" y2="12"></line>
                 <line x1="12" y1="8" x2="12.01" y2="8"></line>
             </svg>
         );
 
-        const Sparkles = () => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        const Sparkles = ({className}) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
-                <path d="M5 3v4"></path>
-                <path d="M19 17v4"></path>
-                <path d="M3 5h4"></path>
-                <path d="M17 19h4"></path>
             </svg>
         );
 
-        const Wind = () => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        const Wind = ({className}) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path>
             </svg>
         );
 
-        const Globe = () => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-            </svg>
-        );
-
-        const Heart = () => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
-        );
-
-        const Shield = () => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            </svg>
-        );
-
-        const Building2 = () => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        const Building2 = ({className}) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
                 <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
                 <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
-                <path d="M10 6h4"></path>
-                <path d="M10 10h4"></path>
-                <path d="M10 14h4"></path>
-                <path d="M10 18h4"></path>
             </svg>
         );
 
-        const Leaf = () => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        const Leaf = ({className}) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
                 <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
             </svg>
         );
 
-        const AlertCircle = () => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        const AlertCircle = ({className}) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="8" x2="12" y2="12"></line>
                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
         );
 
-        const Zap = () => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        const Heart = ({className}) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+        );
+
+        const Shield = ({className}) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             </svg>
         );
 
@@ -143,83 +126,85 @@
                 if (aqi <= 50) return { 
                     label: 'Good', 
                     color: 'from-emerald-400 via-green-500 to-teal-600', 
-                    glow: 'shadow-emerald-500/50',
-                    border: 'border-emerald-400/30',
                     icon: '🌟'
                 };
                 if (aqi <= 100) return { 
                     label: 'Moderate', 
                     color: 'from-yellow-400 via-amber-500 to-orange-500', 
-                    glow: 'shadow-yellow-500/50',
-                    border: 'border-yellow-400/30',
                     icon: '⚠️'
                 };
                 if (aqi <= 150) return { 
                     label: 'Unhealthy for Sensitive', 
                     color: 'from-orange-400 via-red-500 to-pink-600', 
-                    glow: 'shadow-orange-500/50',
-                    border: 'border-orange-400/30',
                     icon: '😷'
                 };
                 if (aqi <= 200) return { 
                     label: 'Unhealthy', 
                     color: 'from-red-500 via-rose-600 to-red-700', 
-                    glow: 'shadow-red-500/50',
-                    border: 'border-red-400/30',
                     icon: '🚨'
                 };
                 if (aqi <= 300) return { 
                     label: 'Very Unhealthy', 
                     color: 'from-purple-500 via-fuchsia-600 to-purple-700', 
-                    glow: 'shadow-purple-500/50',
-                    border: 'border-purple-400/30',
                     icon: '☠️'
                 };
                 return { 
                     label: 'Hazardous', 
                     color: 'from-red-600 via-rose-700 to-black', 
-                    glow: 'shadow-red-700/50',
-                    border: 'border-red-600/30',
                     icon: '💀'
                 };
             };
 
             const cityLandmarks = {
                 'Delhi': { 
-                    image: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800&q=80', 
+                    image: 'https://images.unsplash.com/photo-1597047084897-51e81819a499?w=1200&q=80', 
                     name: 'India Gate', 
-                    desc: 'Iconic war memorial monument',
-                    gradient: 'from-orange-500/20 to-red-500/20'
+                    desc: 'War memorial and iconic Delhi landmark'
                 },
                 'Lahore': { 
-                    image: 'https://images.unsplash.com/photo-1598128558393-70ff21433be0?w=800&q=80', 
+                    image: 'https://images.unsplash.com/photo-1586339277861-bc4502fe0818?w=1200&q=80', 
                     name: 'Badshahi Mosque', 
-                    desc: 'Majestic Mughal-era mosque',
-                    gradient: 'from-pink-500/20 to-purple-500/20'
+                    desc: 'Historic Mughal-era mosque'
                 },
                 'Dhaka': { 
-                    image: 'https://images.unsplash.com/photo-1564479876770-105f8ff95f6d?w=800&q=80', 
-                    name: 'National Parliament', 
-                    desc: 'Jatiya Sangsad Bhaban',
-                    gradient: 'from-green-500/20 to-teal-500/20'
+                    image: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=1200&q=80', 
+                    name: 'National Parliament House', 
+                    desc: 'Modern architectural masterpiece'
                 },
                 'Baghdad': { 
-                    image: 'https://images.unsplash.com/photo-1578895101408-1a36b834405b?w=800&q=80', 
+                    image: 'https://images.unsplash.com/photo-1591608971362-f08b2a75731a?w=1200&q=80', 
                     name: 'Al-Shaheed Monument', 
-                    desc: 'Martyrs Monument',
-                    gradient: 'from-blue-500/20 to-cyan-500/20'
+                    desc: 'Monument honoring Iraqi martyrs'
                 },
                 'Kolkata': { 
-                    image: 'https://images.unsplash.com/photo-1558431382-27343974c572?w=800&q=80', 
+                    image: 'https://images.unsplash.com/photo-1609416383791-6247c041d93a?w=1200&q=80', 
                     name: 'Victoria Memorial', 
-                    desc: 'British Raj monument',
-                    gradient: 'from-yellow-500/20 to-orange-500/20'
+                    desc: 'Grand marble building and museum'
                 },
                 'Mumbai': { 
-                    image: 'https://images.unsplash.com/photo-1566552881560-0be862a7c445?w=800&q=80', 
+                    image: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1200&q=80', 
                     name: 'Gateway of India', 
-                    desc: 'Iconic colonial archway',
-                    gradient: 'from-blue-500/20 to-indigo-500/20'
+                    desc: 'Iconic arch monument on Mumbai Harbor'
+                },
+                'Karachi': { 
+                    image: 'https://images.unsplash.com/photo-1578469645742-46cae010e5d4?w=1200&q=80', 
+                    name: 'Mazar-e-Quaid', 
+                    desc: 'Mausoleum of Muhammad Ali Jinnah'
+                },
+                'Wuhan': { 
+                    image: 'https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=1200&q=80', 
+                    name: 'Yellow Crane Tower', 
+                    desc: 'Ancient Chinese tower overlooking the Yangtze'
+                },
+                'Chengdu': { 
+                    image: 'https://images.unsplash.com/photo-1599070221195-b5a7e2d66209?w=1200&q=80', 
+                    name: 'Giant Panda Base', 
+                    desc: 'Research and breeding facility for pandas'
+                },
+                'Beijing': { 
+                    image: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1200&q=80', 
+                    name: 'Forbidden City', 
+                    desc: 'Imperial palace from Ming Dynasty'
                 },
             };
 
@@ -233,9 +218,13 @@
                     { rank: 4, city: 'Baghdad', country: 'Iraq', aqi: 164 },
                     { rank: 5, city: 'Kolkata', country: 'India', aqi: 162 },
                     { rank: 6, city: 'Mumbai', country: 'India', aqi: 158 },
+                    { rank: 7, city: 'Karachi', country: 'Pakistan', aqi: 156 },
+                    { rank: 8, city: 'Wuhan', country: 'China', aqi: 152 },
+                    { rank: 9, city: 'Chengdu', country: 'China', aqi: 148 },
+                    { rank: 10, city: 'Beijing', country: 'China', aqi: 145 },
                 ];
 
-                for (let i = 7; i <= 100; i++) {
+                for (let i = 11; i <= 100; i++) {
                     mockData.push({
                         rank: i,
                         city: `City ${i}`,
@@ -309,9 +298,9 @@
                         <div className="relative overflow-hidden py-20 px-6">
                             <div className="relative max-w-7xl mx-auto text-center">
                                 <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 backdrop-blur-xl border border-cyan-400/30 rounded-full mb-8 animate-pulse">
-                                    <Sparkles />
+                                    <Sparkles className="w-5 h-5 text-cyan-400" />
                                     <span className="text-cyan-300 font-semibold">Live Global Air Quality Monitor</span>
-                                    <Wind />
+                                    <Wind className="w-5 h-5 text-purple-400" />
                                 </div>
                                 
                                 <h1 className="text-7xl md:text-8xl font-black mb-6 leading-tight">
@@ -346,48 +335,190 @@
                             </div>
                         </div>
 
-                        {/* Cities Preview */}
+                        {/* Cities List */}
                         <div className="max-w-7xl mx-auto px-6 pb-20">
-                            <div className="text-center text-white text-2xl mb-8">
-                                Monitoring {cities.length} cities worldwide
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                 {cities.slice(0, showCount).map((city) => {
                                     const category = getAQICategory(city.aqi);
                                     const landmark = cityLandmarks[city.city] || { 
-                                        image: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80', 
+                                        image: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1200&q=80', 
                                         name: 'City Skyline', 
-                                        desc: 'Urban landscape',
-                                        gradient: 'from-gray-500/20 to-slate-500/20'
+                                        desc: 'Urban landscape'
                                     };
+                                    const isExpanded = expandedCity?.city === city.city;
 
                                     return (
-                                        <div key={city.rank} className="group relative bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:scale-105 transition-all duration-500">
-                                            <div className="relative h-48">
-                                                <img 
-                                                    src={landmark.image} 
-                                                    alt={landmark.name}
-                                                    className="w-full h-full object-cover"
-                                                    onError={(e) => e.target.src = 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80'}
-                                                />
-                                                <div className={`absolute inset-0 bg-gradient-to-t ${landmark.gradient} to-black/60`}></div>
-                                                <div className="absolute top-4 left-4">
-                                                    <div className="bg-black/70 px-3 py-1 rounded-full text-white font-bold">#{city.rank}</div>
-                                                </div>
-                                                <div className="absolute top-4 right-4">
-                                                    <div className={`bg-gradient-to-r ${category.color} px-4 py-2 rounded-xl text-white font-bold`}>
-                                                        {city.aqi}
+                                        <div key={city.rank} className="group relative">
+                                            <div className={`absolute -inset-1 bg-gradient-to-r ${category.color} opacity-0 group-hover:opacity-75 blur-2xl transition-opacity duration-700 rounded-3xl`}></div>
+                                            
+                                            <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 overflow-hidden transition-all duration-700 hover:scale-[1.02] shadow-2xl">
+                                                {/* Image Section */}
+                                                <div className="relative h-72 overflow-hidden">
+                                                    <img 
+                                                        src={landmark.image} 
+                                                        alt={landmark.name}
+                                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                                                        onError={(e) => e.target.src = 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1200&q=80'}
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/60"></div>
+                                                    
+                                                    {/* Rank & Country */}
+                                                    <div className="absolute top-6 left-6 flex items-center gap-3">
+                                                        <div className="bg-black/70 backdrop-blur-md px-5 py-2 rounded-full border border-white/20">
+                                                            <span className="text-white font-bold text-xl">#{city.rank}</span>
+                                                        </div>
+                                                        <div className="bg-black/70 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
+                                                            <span className="text-white text-sm">🌍 {city.country}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* AQI Badge */}
+                                                    <div className="absolute top-6 right-6">
+                                                        <div className={`relative bg-gradient-to-r ${category.color} px-6 py-3 rounded-2xl shadow-2xl animate-pulse`}>
+                                                            <div className="text-white font-black text-3xl">{city.aqi}</div>
+                                                            <div className="text-white/80 text-xs font-semibold">AQI</div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* City Name & Landmark */}
+                                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6">
+                                                        <h2 className="text-4xl font-black text-white mb-2 drop-shadow-lg">{city.city}</h2>
+                                                        <div className="flex items-center gap-2 text-gray-200">
+                                                            <Building2 className="w-4 h-4" />
+                                                            <span className="font-semibold">{landmark.name}</span>
+                                                            <span className="text-gray-400">•</span>
+                                                            <span className="text-sm text-gray-300">{landmark.desc}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="absolute bottom-4 left-4 right-4">
-                                                    <h3 className="text-white font-bold text-xl">{city.city}</h3>
-                                                    <p className="text-gray-300 text-sm">{city.country}</p>
-                                                </div>
-                                            </div>
-                                            <div className="p-4">
-                                                <div className={`flex items-center gap-2 ${category.color.replace('from-', 'text-').split(' ')[0].replace('via-', '').replace('to-', '')}`}>
-                                                    <span className="text-2xl">{category.icon}</span>
-                                                    <span className="text-white font-semibold">{category.label}</span>
+
+                                                {/* Status & Button */}
+                                                <div className="p-6 border-t border-white/10">
+                                                    <div className={`bg-gradient-to-r ${category.color} rounded-2xl p-4 mb-4 shadow-lg`}>
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-3xl">{category.icon}</span>
+                                                                <div>
+                                                                    <div className="text-white font-bold text-lg">{category.label}</div>
+                                                                    <div className="text-white/70 text-sm">Air Quality Status</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Expand Button */}
+                                                    <button
+                                                        onClick={() => toggleCity(city)}
+                                                        className="w-full bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 hover:from-cyan-600 hover:via-purple-600 hover:to-pink-600 text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 hover:scale-105 shadow-lg group"
+                                                    >
+                                                        <Sparkles className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" />
+                                                        {isExpanded ? 'Hide AI Analysis' : 'Generate AI Insights'}
+                                                        {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                                                    </button>
+
+                                                    {/* Expanded AI Analysis */}
+                                                    {isExpanded && (
+                                                        <div className="mt-6 space-y-4 animate-slideDown">
+                                                            {loadingAI ? (
+                                                                <div className="text-center py-12">
+                                                                    <div className="inline-block relative">
+                                                                        <div className="w-16 h-16 border-4 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin"></div>
+                                                                        <Sparkles className="w-8 h-8 text-cyan-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+                                                                    </div>
+                                                                    <p className="text-white font-semibold mt-6 text-lg">AI Analyzing Air Quality Data...</p>
+                                                                    <p className="text-gray-400 text-sm mt-2">Generating personalized insights</p>
+                                                                </div>
+                                                            ) : aiAnalysis[city.city] && (
+                                                                <>
+                                                                    {/* Causes */}
+                                                                    <div className="relative group">
+                                                                        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                                                        <div className="relative bg-gradient-to-br from-orange-500/10 to-red-500/10 backdrop-blur-xl rounded-2xl p-6 border border-orange-500/20 hover:border-orange-500/40 transition-all duration-500">
+                                                                            <div className="flex items-center gap-3 mb-4">
+                                                                                <div className="p-3 bg-orange-500/20 rounded-xl">
+                                                                                    <AlertCircle className="w-6 h-6 text-orange-400" />
+                                                                                </div>
+                                                                                <h4 className="text-orange-400 font-bold text-xl">Pollution Causes</h4>
+                                                                            </div>
+                                                                            <p className="text-gray-200 leading-relaxed">{aiAnalysis[city.city].causes}</p>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Health */}
+                                                                    <div className="relative group">
+                                                                        <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-pink-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                                                        <div className="relative bg-gradient-to-br from-red-500/10 to-pink-500/10 backdrop-blur-xl rounded-2xl p-6 border border-red-500/20 hover:border-red-500/40 transition-all duration-500">
+                                                                            <div className="flex items-center gap-3 mb-4">
+                                                                                <div className="p-3 bg-red-500/20 rounded-xl">
+                                                                                    <Heart className="w-6 h-6 text-red-400" />
+                                                                                </div>
+                                                                                <h4 className="text-red-400 font-bold text-xl">Health Impact</h4>
+                                                                            </div>
+                                                                            <p className="text-gray-200 leading-relaxed">{aiAnalysis[city.city].health}</p>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Citizen Actions */}
+                                                                    <div className="relative group">
+                                                                        <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                                                        <div className="relative bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xl rounded-2xl p-6 border border-green-500/20 hover:border-green-500/40 transition-all duration-500">
+                                                                            <div className="flex items-center gap-3 mb-4">
+                                                                                <div className="p-3 bg-green-500/20 rounded-xl">
+                                                                                    <Leaf className="w-6 h-6 text-green-400" />
+                                                                                </div>
+                                                                                <h4 className="text-green-400 font-bold text-xl">What You Can Do</h4>
+                                                                            </div>
+                                                                            <div className="space-y-3">
+                                                                                {aiAnalysis[city.city].citizenActions.map((action, idx) => (
+                                                                                    <div key={idx} className="flex items-start gap-3 bg-white/5 rounded-xl p-4 hover:bg-white/10 transition-all duration-300">
+                                                                                        <div className="text-2xl">{['🚴', '🌱', '💡'][idx]}</div>
+                                                                                        <p className="text-gray-200 flex-1">{action}</p>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Government Initiatives */}
+                                                                    <div className="relative group">
+                                                                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                                                        <div className="relative bg-gradient-to-br from-blue-500/10 to-cyan-500/10 backdrop-blur-xl rounded-2xl p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-500">
+                                                                            <div className="flex items-center gap-3 mb-4">
+                                                                                <div className="p-3 bg-blue-500/20 rounded-xl">
+                                                                                    <Shield className="w-6 h-6 text-blue-400" />
+                                                                                </div>
+                                                                                <h4 className="text-blue-400 font-bold text-xl">Government Initiatives</h4>
+                                                                            </div>
+                                                                            <div className="space-y-3">
+                                                                                {aiAnalysis[city.city].govInitiatives.map((initiative, idx) => (
+                                                                                    <div key={idx} className="flex items-start gap-3 bg-white/5 rounded-xl p-4 hover:bg-white/10 transition-all duration-300">
+                                                                                        <div className="text-2xl">{['🏛️', '⚡'][idx]}</div>
+                                                                                        <p className="text-gray-200 flex-1">{initiative}</p>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Data Sources */}
+                                                                    <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20">
+                                                                        <h4 className="text-purple-400 font-bold text-lg mb-4">Data Sources Breakdown</h4>
+                                                                        <div className="grid grid-cols-3 gap-4 mb-4">
+                                                                            {Object.entries(aiAnalysis[city.city].sources).map(([key, value]) => (
+                                                                                <div key={key} className="text-center">
+                                                                                    <div className="text-3xl font-black text-white mb-1">{value}%</div>
+                                                                                    <div className="text-xs text-gray-400 capitalize">{key}</div>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                        <p className="text-xs text-gray-400 italic leading-relaxed">
+                                                                            ⚠️ AI-generated analysis based on general knowledge. For official data, consult local environmental agencies. Information accuracy may vary.
+                                                                        </p>
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -395,28 +526,162 @@
                                 })}
                             </div>
 
+                            {/* Load More Button */}
                             {showCount < 100 && (
-                                <div className="text-center mt-12">
+                                <div className="text-center mt-16">
                                     <button
                                         onClick={() => setShowCount(Math.min(showCount + 50, 100))}
-                                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300"
+                                        className="group relative inline-flex items-center gap-4 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 hover:from-purple-700 hover:via-pink-700 hover:to-red-700 text-white font-bold py-6 px-12 rounded-2xl transition-all duration-500 hover:scale-110 shadow-2xl hover:shadow-purple-500/50"
                                     >
-                                        Load More Cities (+{Math.min(50, 100 - showCount)} more)
+                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 blur-2xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
+                                        <span className="relative text-xl">Load More Cities</span>
+                                        <span className="relative bg-white/20 px-4 py-2 rounded-full text-sm">
+                                            +{Math.min(50, 100 - showCount)} more
+                                        </span>
+                                        <ChevronDown className="relative w-6 h-6 group-hover:animate-bounce" />
                                     </button>
                                 </div>
                             )}
                         </div>
 
-                        {/* Footer */}
-                        <div className="bg-gradient-to-b from-black via-purple-900/20 to-black py-12">
-                            <div className="max-w-7xl mx-auto px-6 text-center">
-                                <div className="text-white mb-4">
-                                    <p className="text-xl font-bold mb-2">Created with Claude AI</p>
-                                    <p className="text-gray-400">Powered by Anthropic • Educational Demonstration</p>
-                                </div>
-                                <div className="text-gray-500 text-sm">
-                                    <p>Auto-refreshes weekly • Data from IQAir, WHO, EPA</p>
-                                    <p className="mt-2">Visit <a href="https://www.iqair.com/world-air-quality-ranking" className="text-cyan-400 hover:underline" target="_blank">IQAir</a> for official real-time data</p>
+                        {/* Footer - About & Sources */}
+                        <div className="relative bg-gradient-to-b from-black via-purple-900/20 to-black py-20">
+                            <div className="max-w-7xl mx-auto px-6">
+                                <div className="bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 p-12 shadow-2xl">
+                                    <div className="text-center mb-12">
+                                        <Sparkles className="w-16 h-16 text-cyan-400 mx-auto mb-6" />
+                                        <h3 className="text-5xl font-black text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
+                                            About This Project
+                                        </h3>
+                                        <div className="h-2 w-32 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 mx-auto rounded-full"></div>
+                                    </div>
+                                    
+                                    <div className="grid md:grid-cols-2 gap-8 mb-12">
+                                        {/* Created By */}
+                                        <div className="relative group">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                            <div className="relative bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-xl rounded-2xl p-8 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-500 hover:scale-105">
+                                                <div className="flex items-center gap-4 mb-6">
+                                                    <div className="p-4 bg-cyan-500/20 rounded-2xl">
+                                                        <Sparkles className="w-8 h-8 text-cyan-400" />
+                                                    </div>
+                                                    <h4 className="text-cyan-400 font-bold text-2xl">Created By</h4>
+                                                </div>
+                                                <p className="text-gray-200 leading-relaxed text-lg mb-4">
+                                                    This cutting-edge air quality visualization was created by <span className="text-white font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">Claude</span>, Anthropic's advanced AI assistant.
+                                                </p>
+                                                <p className="text-gray-300 text-sm leading-relaxed">
+                                                    Combining real-time data analysis with beautiful design to make air quality information accessible and actionable for everyone.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Data Sources */}
+                                        <div className="relative group">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                            <div className="relative bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-xl rounded-2xl p-8 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-500 hover:scale-105">
+                                                <div className="flex items-center gap-4 mb-6">
+                                                    <div className="p-4 bg-purple-500/20 rounded-2xl">
+                                                        <Info className="w-8 h-8 text-purple-400" />
+                                                    </div>
+                                                    <h4 className="text-purple-400 font-bold text-2xl">Data Sources</h4>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    {[
+                                                        { name: 'IQAir', desc: 'World Air Quality Index Rankings', icon: '🌍' },
+                                                        { name: 'WHO', desc: 'Air Quality Guidelines & Health Data', icon: '🏥' },
+                                                        { name: 'EPA', desc: 'Air Quality Standards & Research', icon: '🔬' },
+                                                        { name: 'Local Agencies', desc: 'Regional monitoring data', icon: '📊' },
+                                                    ].map((source, idx) => (
+                                                        <div key={idx} className="flex items-center gap-4 bg-white/5 rounded-xl p-4 hover:bg-white/10 transition-all duration-300">
+                                                            <span className="text-3xl">{source.icon}</span>
+                                                            <div className="flex-1">
+                                                                <div className="text-white font-bold">{source.name}</div>
+                                                                <div className="text-gray-400 text-sm">{source.desc}</div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Auto-Refresh Info */}
+                                    <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-8 mb-8">
+                                        <div className="flex items-start gap-4">
+                                            <div className="p-4 bg-green-500/20 rounded-2xl">
+                                                <Wind className="w-8 h-8 text-green-400" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className="text-green-400 font-bold text-xl mb-3">Automatic Weekly Updates</h4>
+                                                <p className="text-gray-200 leading-relaxed mb-4">
+                                                    This site automatically refreshes air quality data every week, ensuring you always have access to current information. No database required - data is fetched in real-time directly from official sources.
+                                                </p>
+                                                <div className="flex items-center gap-2 text-sm text-gray-300">
+                                                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                                    <span>Next update in 7 days</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Disclaimer */}
+                                    <div className="bg-gradient-to-br from-yellow-500/10 via-orange-500/10 to-red-500/10 border border-yellow-500/20 rounded-2xl p-8">
+                                        <div className="flex items-start gap-4">
+                                            <div className="p-4 bg-yellow-500/20 rounded-2xl flex-shrink-0">
+                                                <AlertCircle className="w-8 h-8 text-yellow-400" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className="text-yellow-400 font-bold text-xl mb-4">Important Disclaimer</h4>
+                                                <p className="text-gray-200 leading-relaxed mb-6">
+                                                    This is an educational demonstration project powered by AI. While we strive for accuracy, AQI values shown may be sample or cached data. AI-generated analysis is based on general knowledge patterns and may not reflect current real-time conditions.
+                                                </p>
+                                                <div className="space-y-3">
+                                                    <p className="text-white font-semibold">For official, real-time air quality data, please consult:</p>
+                                                    <div className="grid md:grid-cols-2 gap-3">
+                                                        <a 
+                                                            href="https://www.iqair.com/world-air-quality-ranking" 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center gap-3 bg-white/5 hover:bg-white/10 rounded-xl p-4 transition-all duration-300 group"
+                                                        >
+                                                            <span className="text-2xl">🌍</span>
+                                                            <div className="flex-1">
+                                                                <div className="text-cyan-400 font-semibold group-hover:text-cyan-300">IQAir World Ranking</div>
+                                                                <div className="text-gray-400 text-xs">Official real-time data</div>
+                                                            </div>
+                                                        </a>
+                                                        <div className="flex items-center gap-3 bg-white/5 rounded-xl p-4">
+                                                            <span className="text-2xl">🏛️</span>
+                                                            <div className="flex-1">
+                                                                <div className="text-purple-400 font-semibold">Local EPA/Gov Agencies</div>
+                                                                <div className="text-gray-400 text-xs">Your region's official source</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Footer Credits */}
+                                    <div className="mt-12 pt-8 border-t border-white/10">
+                                        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-3 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl">
+                                                    <Sparkles className="w-6 h-6 text-white" />
+                                                </div>
+                                                <div>
+                                                    <div className="text-white font-bold text-lg">Built with Claude AI</div>
+                                                    <div className="text-gray-400 text-sm">Powered by Anthropic</div>
+                                                </div>
+                                            </div>
+                                            <div className="text-center md:text-right">
+                                                <div className="text-gray-400 text-sm">Educational & Demonstration Purposes</div>
+                                                <div className="text-gray-500 text-xs mt-1">© 2024 • Breathe Better Initiative</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
