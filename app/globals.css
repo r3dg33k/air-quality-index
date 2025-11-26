@@ -23,4 +23,31 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.5s ease;
 }
+
+/* Dynamic Gradients based on AQI */
+.bg-gradient-good {
+  background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%);
+}
+
+.bg-gradient-moderate {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+}
+
+.bg-gradient-unhealthy-sensitive {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+}
+
+.bg-gradient-unhealthy {
+  background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+}
+
+.bg-gradient-very-unhealthy {
+  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+}
+
+.bg-gradient-hazardous {
+  background: linear-gradient(135deg, #434343 0%, black 100%);
+}
+
