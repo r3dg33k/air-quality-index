@@ -8,8 +8,8 @@ export interface AQIData {
 
 export const mockAQIData: AQIData = {
   city: "San Francisco",
-  aqi: 61,
-  level: "Moderate",
-  message: "Air quality is acceptable.",
-  updatedAt: "2026-01-11T00:50:26.758Z",
+  aqi: 160,
+  level: "Unhealthy",
+  message: "Everyone may begin to experience health effects.",
+  updatedAt: "2026-01-18T00:49:38.836Z",
 };
